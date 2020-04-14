@@ -23,7 +23,7 @@ class NewsApiRequestEverything extends NewsApiRequest
 
     public static $_languages = ['ar', 'de', 'en', 'es', 'fr', 'he', 'it', 'nl', 'no', 'pt', 'ru', 'se', 'ud', 'zh'];
 
-    protected function rule($key)
+    protected function validate($key)
     {
         switch ($key) {
             case 'language':
@@ -35,10 +35,13 @@ class NewsApiRequestEverything extends NewsApiRequest
                 };
             case 'q':
                 return function ($value) {
-                    return preg_match('~.*[A-Za-z0-9]+.*~', $value);
+                    if (!preg_match('~.*[A-Za-z0-9]+.*~', $value)) {
+                        $this->errors['q'] = 'bad value';
+                        return false;
+                    }
+                    return true;
                 };
         }
         return null;
     }
-
 }

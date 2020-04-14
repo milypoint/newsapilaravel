@@ -9,9 +9,7 @@ if (!isset($languages)) {
 <!doctype html>
 <html>
 <head>
-	<title>
-        {{$title ?? 'Search news'}}
-	</title>
+	<title>Search news</title>
     <script type="text/javascript" src="{{ URL::asset('js/live_request.js') }}"></script>
 </head>
 <body>

@@ -9,18 +9,23 @@ use \GuzzleHttp\Client;
 
 abstract class NewsApiRequest extends ClassWithAttributes
 {
-    protected static $_query_parameters = null;
-    protected static $_endpoint = null;
+    protected static $_query_parameters;
+    protected static $_endpoint;
+    protected $errors = [];
 
     protected $baseUrl = 'http://newsapi.org';
 
-    abstract protected function rule($key);
+    abstract protected function validate($key);
 
     public function __set($key, $value)
     {
         if (in_array($key, static::$_query_parameters)) {
-            $rule = $this->rule($key);
-            if (!($rule !== null and !$rule($value))) {
+            $validator = $this->validate($key);
+            $validation_result = $validator($value);
+            if (!($validator !== null and !$validation_result)) {
+                if ($validation_result !== true) {
+                    $value = $validation_result;
+                }
                 parent::__set($key, $value);
             }
         }
@@ -35,6 +40,9 @@ abstract class NewsApiRequest extends ClassWithAttributes
 
     public function request()
     {
+        if (!empty($this->errors)) {
+            return [];
+        }
         //getting api token:
         $apiToken = config('newsapi.token');
         try {
