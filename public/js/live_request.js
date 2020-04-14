@@ -109,26 +109,27 @@ var is_requesting = false;
 var waitInputTime = 1000;
 var searchTimeout;
 window.addEventListener('load', onPageLoaded);
-var xhr = new XMLHttpRequest();
 
 function onPageLoaded() {
+  var xhr = new XMLHttpRequest();
+
   document.getElementById('input_field').onkeypress = function () {
     if (searchTimeout !== undefined) clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(makeRequest, waitInputTime);
+    searchTimeout = setTimeout(makeRequest, waitInputTime, xhr);
   };
 }
 
-function makeRequest() {
+function makeRequest(xhr) {
   if (!is_requesting) {
     xhr.onload = function () {
       document.getElementById('result').innerHTML = xhr.responseText;
+      is_requesting = false;
     };
 
     console.log(createUrl(getFormValues()));
     xhr.open('GET', createUrl(getFormValues()), true);
     is_requesting = true;
     xhr.send();
-    is_requesting = false;
   }
 }
 
